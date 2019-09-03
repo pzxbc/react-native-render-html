@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Image, View, Text } from 'react-native';
+import { Image, View, Text, PixelRatio } from 'react-native';
 import PropTypes from 'prop-types';
 
 export default class HTMLImage extends PureComponent {
@@ -89,6 +89,10 @@ export default class HTMLImage extends PureComponent {
         Image.getSize(
             source.uri,
             (originalWidth, originalHeight) => {
+                // divide pixelratio
+                let ratio = PixelRatio.get()
+                originalWidth = originalWidth / ratio
+                originalHeight = originalHeight /ratio
                 if (!imagesMaxWidth) {
                     return this.mounted && this.setState({ width: originalWidth, height: originalHeight });
                 }
