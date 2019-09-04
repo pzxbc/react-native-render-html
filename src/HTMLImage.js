@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Image, View, Text, PixelRatio } from 'react-native';
+import { Image, View, Text, PixelRatio, TouchableWithoutFeedback } from 'react-native';
 import PropTypes from 'prop-types';
 
 export default class HTMLImage extends PureComponent {
@@ -108,11 +108,13 @@ export default class HTMLImage extends PureComponent {
 
     validImage (source, style, props = {}) {
         return (
-            <Image
-              source={source}
-              style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover' }]}
-              {...props}
-            />
+            <TouchableWithoutFeedback onPress={() => this.props.onImagePress(source.uri)}>
+                <Image
+                source={source}
+                style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover'}]}
+                {...props}
+                />
+            </TouchableWithoutFeedback>
         );
     }
 
@@ -125,6 +127,7 @@ export default class HTMLImage extends PureComponent {
     }
 
     render () {
+        // 这里passProps应该为空，render传进来之前已经解构了
         const { source, style, passProps } = this.props;
 
         return !this.state.error ? this.validImage(source, style, passProps) : this.errorImage;

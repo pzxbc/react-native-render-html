@@ -29,6 +29,7 @@ export default class HTML extends PureComponent {
         alterData: PropTypes.func,
         alterChildren: PropTypes.func,
         alterNode: PropTypes.func,
+        onImagePress: PropTypes.func,
         html: PropTypes.string,
         uri: PropTypes.string,
         tagsStyles: PropTypes.object,
