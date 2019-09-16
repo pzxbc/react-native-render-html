@@ -26,8 +26,8 @@ export default class HTMLImage extends PureComponent {
 
     static defaultProps = {
         imagesInitialDimensions: {
-            width: 100,
-            height: 100
+            width: 0,
+            height: 0
         }
     }
 
@@ -111,7 +111,8 @@ export default class HTMLImage extends PureComponent {
             <TouchableWithoutFeedback onPress={() => this.props.onImagePress(source.uri)}>
                 <Image
                 source={source}
-                style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover'}]}
+                resizeMode={'contain'}
+                style={[style, { width: this.state.width, height: this.state.height}]}
                 {...props}
                 />
             </TouchableWithoutFeedback>
