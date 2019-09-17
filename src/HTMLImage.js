@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Image, View, Text, PixelRatio, TouchableWithoutFeedback } from 'react-native';
+import { Image, View, Text, PixelRatio, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 
 export default class HTMLImage extends PureComponent {
@@ -130,6 +130,14 @@ export default class HTMLImage extends PureComponent {
     render () {
         // 这里passProps应该为空，render传进来之前已经解构了
         const { source, style, passProps } = this.props;
+
+        if (this.state.width === 0 || this.state.height === 0) {
+          return (
+            <View style={{width: 32, height: 32, justifyContent: "center", alignItems: "center"}}>
+              <ActivityIndicator size="small" />
+            </View>
+          )
+        }
 
         return !this.state.error ? this.validImage(source, style, passProps) : this.errorImage;
     }
