@@ -166,8 +166,9 @@ export function br (htlmAttribs, children, convertedCSSStyles, passProps) {
 }
 
 export function textwrapper (htmlAttribs, children, convertedCSSStyles, { allowFontScaling, key }) {
+  // Todo: 为啥这里的padding与下面rawtext中lineHeight不能一起用...
     return (
-        <Text allowFontScaling={allowFontScaling} key={key} style={convertedCSSStyles}>{ children }</Text>
+        <Text allowFontScaling={allowFontScaling} key={key} style={[convertedCSSStyles, {paddingTop: 16, paddingBottom: 16}]}>{ children }</Text>
     );
 }
 
@@ -178,7 +179,7 @@ export function rawtext (htmlAttribs, children, convertedCSSStyles, { baseFontSt
   return (
     <Text
       allowFontScaling={allowFontScaling}
-      style={[baseFontStyle, htmlAttribs.color? {color: htmlAttribs.color} : {}]}
+      style={[baseFontStyle, htmlAttribs.color? {color: htmlAttribs.color} : {}, {lineHeight: 16}]}
     >
       {data}
     </Text>
