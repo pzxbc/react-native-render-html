@@ -34,9 +34,9 @@ export function cssObjectToString (obj) {
  * @param {any} { tagName, htmlAttribs, passProps, additionalStyles, styleSet = 'VIEW' }
  * @returns {object}
  */
-export function _constructStyles ({ tagName, htmlAttribs, passProps, additionalStyles, styleSet = 'VIEW', baseFontSize }) {
-    let defaultTextStyles = generateDefaultTextStyles(baseFontSize);
-    let defaultBlockStyles = generateDefaultBlockStyles(baseFontSize);
+export function _constructStyles ({ tagName, htmlAttribs, passProps, additionalStyles, styleSet = 'VIEW', baseFontStyle }) {
+    let defaultTextStyles = generateDefaultTextStyles(baseFontStyle.fontSize);
+    let defaultBlockStyles = generateDefaultBlockStyles(baseFontStyle.fontSize);
 
     passProps.ignoredStyles.forEach((ignoredStyle) => {
         htmlAttribs[ignoredStyle] && delete htmlAttribs[ignoredStyle];
