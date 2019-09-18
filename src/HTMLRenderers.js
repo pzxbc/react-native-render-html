@@ -170,3 +170,17 @@ export function textwrapper (htmlAttribs, children, convertedCSSStyles, { allowF
         <Text allowFontScaling={allowFontScaling} key={key} style={convertedCSSStyles}>{ children }</Text>
     );
 }
+
+// 先不考虑u、strong、等那些效果。在defaultstyle这有返回。然后可以通过父标签的tagName来决定应用样式。
+// 可以参考computeTextStyle写
+export function rawtext (htmlAttribs, children, convertedCSSStyles, { baseFontStyle, allowFontScaling, key, data})
+{
+  return (
+    <Text
+      allowFontScaling={allowFontScaling}
+      style={[baseFontStyle, htmlAttribs.color? {color: htmlAttribs.color} : {}]}
+    >
+      {data}
+    </Text>
+  )
+}

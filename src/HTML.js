@@ -16,6 +16,19 @@ import { generateDefaultBlockStyles, generateDefaultTextStyles } from './HTMLDef
 import htmlparser2 from 'htmlparser2';
 import * as HTMLRenderers from './HTMLRenderers';
 
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 export default class HTML extends PureComponent {
     static propTypes = {
         renderers: PropTypes.object.isRequired,
@@ -147,8 +160,8 @@ export default class HTML extends PureComponent {
                 }
                 this.setState({ RNNodes: this.renderRNElements(RNElements, 'root', 0, props) });
                 if (debug) {
-                    console.log('DOMNodes from htmlparser2', dom);
-                    console.log('RNElements from render-html', RNElements);
+                    // console.log('DOMNodes from htmlparser2', dom);
+                    console.log('RNElements from render-html', RNElements[0].wrapper, RNElements[0].tagName, RNElements[0].children[0].wrapper, RNElements[0].children[0].tagName, RNElements[0].children[0].children.length, RNElements[0].children[0].children[0].tagName, RNElements[0].children[0].children[0].data, RNElements[0].children[0].children[0].children.length);
                 }
             }),
             { decodeEntities: decodeEntities }
@@ -320,11 +333,11 @@ export default class HTML extends PureComponent {
             const firstChild = children && children[0];
             if (firstChild && children.length === 1) {
                 // Specific tweaks for wrappers with a single child
-                if ((attribs === firstChild.attribs || !firstChild.attribs) &&
+                if ((attribs === firstChild.attribs || (!firstChild.attribs || Object.keys(firstChild.attribs).length == 0)) &&
                     firstChild.wrapper === wrapper &&
                     (tagName === firstChild.tagName || firstChild.tagName === 'rawtext')) {
                     // If the only child of a node is using the same wrapper, merge them into one
-                    return {
+                    let newNode = {
                         ...parsedNode,
                         attribs: { ...attribs, ...firstChild.attribs },
                         data: firstChild.data,
@@ -332,6 +345,7 @@ export default class HTML extends PureComponent {
                         tagName,
                         nodeIndex
                     };
+                    return newNode
                 }
             }
             return { ...parsedNode, nodeIndex };
@@ -453,25 +467,42 @@ export default class HTML extends PureComponent {
             }
 
             const classStyles = _getElementClassStyles(attribs, classesStyles);
-            const textElement = data ?
-                <Text
-                  allowFontScaling={allowFontScaling}
-                  style={computeTextStyles(
-                      element,
-                      {
-                          defaultTextStyles: this.defaultTextStyles,
-                          tagsStyles,
-                          classesStyles,
-                          baseFontStyle,
-                          emSize,
-                          ptSize,
-                          ignoredStyles,
-                          allowedStyles
-                      })}
-                >
-                    { data }
-                </Text> :
-                false;
+            // const textElement = data ?
+            //     <Text
+            //       allowFontScaling={allowFontScaling}
+            //       style={[computeTextStyles(
+            //           element,
+            //           {
+            //               defaultTextStyles: this.defaultTextStyles,
+            //               tagsStyles,
+            //               classesStyles,
+            //               baseFontStyle,
+            //               emSize,
+            //               ptSize,
+            //               ignoredStyles,
+            //               allowedStyles
+            //           // }), attribs.color? {color: attribs.color}: {} ]}
+            //           })]}
+            //     >
+            //         { data }
+            //     </Text> :
+            //     false;
+
+            const textElement = data ? this.renderers['rawtext'](
+              attribs,
+              childElements,
+              convertedCSSStyles,
+              {
+                  ...props,
+                  parentWrapper: wrapper,
+                  parentTag,
+                  nodeIndex,
+                  parentIndex,
+                  key,
+                  data,
+                  rawChildren: children
+              }              
+            ) : false
 
             const style = [
                 (!tagsStyles || !tagsStyles[tagName]) ? (Wrapper === Text ? this.defaultTextStyles : this.defaultBlockStyles)[tagName] : undefined,

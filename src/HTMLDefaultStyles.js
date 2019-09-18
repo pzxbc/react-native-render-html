@@ -35,7 +35,8 @@ export function generateDefaultTextStyles (baseFontSize = BASE_FONT_SIZE) {
         small: { fontSize: baseFontSize * 0.8 },
         a: {
             textDecorationLine: 'underline',
-            color: '#245dc1'
+            color: '#245dc1',
+            fontSize: baseFontSize,
         },
         h1: _generateHeadingStyle(baseFontSize, 2, 0.67),
         h2: _generateHeadingStyle(baseFontSize, 1.5, 0.83),
