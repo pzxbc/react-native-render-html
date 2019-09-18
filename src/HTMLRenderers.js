@@ -155,6 +155,13 @@ export function pre (htlmAttribs, children, convertedCSSStyles, passProps) {
 
 export function br (htlmAttribs, children, convertedCSSStyles, passProps) {
     return (
+      // <Text key={passProps.key}>
+      //   <Text
+      //       allowFontScaling={passProps.allowFontScaling}
+      //       style={{ height: 1.2 * passProps.emSize, flex: 1 }}
+      //   >
+      //       {"\n"}
+      //   </Text>
         <Text
             allowFontScaling={passProps.allowFontScaling}
             style={{ height: 1.2 * passProps.emSize, flex: 1 }}
@@ -162,13 +169,15 @@ export function br (htlmAttribs, children, convertedCSSStyles, passProps) {
         >
             {"\n"}
         </Text>
+      // </Text>
     );
 }
 
 export function textwrapper (htmlAttribs, children, convertedCSSStyles, { allowFontScaling, key }) {
   // Todo: 为啥这里的padding与下面rawtext中lineHeight不能一起用...
     return (
-        <Text allowFontScaling={allowFontScaling} key={key} style={[convertedCSSStyles, {paddingTop: 16, paddingBottom: 16}]}>{ children }</Text>
+        // <Text allowFontScaling={allowFontScaling} key={key} style={[convertedCSSStyles, {paddingTop: 16, paddingBottom: 16}]}>{ children }</Text>
+        <Text allowFontScaling={allowFontScaling} key={key} style={[convertedCSSStyles]}>{ children }</Text>
     );
 }
 
@@ -179,7 +188,8 @@ export function rawtext (htmlAttribs, children, convertedCSSStyles, { baseFontSt
   return (
     <Text
       allowFontScaling={allowFontScaling}
-      style={[baseFontStyle, htmlAttribs.color? {color: htmlAttribs.color} : {}, {lineHeight: 16}]}
+      style={[baseFontStyle, htmlAttribs.color? {color: htmlAttribs.color} : {}]}
+      key={key}
     >
       {data}
     </Text>

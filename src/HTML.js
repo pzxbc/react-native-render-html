@@ -161,7 +161,8 @@ export default class HTML extends PureComponent {
                 this.setState({ RNNodes: this.renderRNElements(RNElements, 'root', 0, props) });
                 if (debug) {
                     // console.log('DOMNodes from htmlparser2', dom);
-                    console.log('RNElements from render-html', RNElements[0].wrapper, RNElements[0].tagName, RNElements[0].children[0].wrapper, RNElements[0].children[0].tagName, RNElements[0].children[0].children.length, RNElements[0].children[0].children[0].tagName, RNElements[0].children[0].children[0].data, RNElements[0].children[0].children[0].children.length);
+                    // console.log('rnelements info', RNElements[0].tagName)
+                    // console.log('RNElements from render-html', RNElements[0].wrapper, RNElements[0].tagName, RNElements[0].children[0].wrapper, RNElements[0].children[0].tagName, RNElements[0].children[0].children.length, RNElements[0].children[0].children[0].tagName, RNElements[0].children[0].children[0].data, RNElements[0].children[0].children[0].children.length);
                 }
             }),
             { decodeEntities: decodeEntities }
@@ -247,6 +248,29 @@ export default class HTML extends PureComponent {
         return children.filter((parsedNode) => parsedNode !== false && parsedNode !== undefined);
     }
 
+    associateBr (children) {
+      for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if ( (child.tagName === 'br') && children.length > 1) {
+              let j = undefined;
+              for (j = i+1; j < children.length; j++) {
+                  let nextSibling = children[j];
+                  if (nextSibling.tagName === 'br') {
+                    children[j] = false;
+                  }
+                  else {
+                    break
+                  }
+              }
+              // 末尾的折行全删了
+              // if (j >= children.length) {
+              //   children[i] = false
+              // }
+          }
+      }
+      return children.filter((parsedNode) => parsedNode !== false && parsedNode !== undefined);
+  }
+
     /**
      * Maps the DOM nodes parsed by htmlparser2 into a simple structure that will be easy to render with
      * native components. It removes ignored tags, chooses the right wrapper for each set of children
@@ -291,9 +315,10 @@ export default class HTML extends PureComponent {
                 }
 
                 if (
-                    node.parent &&
+                  // 这里不需要判断是否有父节点。 顶层的text也需要过滤这些控制符
+                    (node.parent &&
                     node.parent.name &&
-                    PREFORMATTED_TAGS.indexOf(node.parent.name) === -1
+                    PREFORMATTED_TAGS.indexOf(node.parent.name) === -1) || !node.parent
                 ) {
                     // Remove line breaks in non-pre-formatted tags
                     data = data.replace(/(\r\n|\n|\r)/gm, '');
@@ -313,11 +338,16 @@ export default class HTML extends PureComponent {
                 if (children) {
                     // Recursively map all children with this method
                     children = this.associateRawTexts(this.mapDOMNodesTORNElements(children, name));
+                    children = this.associateBr(children)
+                    // children = this.mapDOMNodesTORNElements(children, name);
                 }
                 if (this.childrenNeedAView(children) || BLOCK_TAGS.indexOf(name.toLowerCase()) !== -1) {
                     // If children cannot be nested in a Text, or if the tag
                     // maps to a block element, use a view
                     return { wrapper: 'View', children, attribs, parent, tagName: name, parentTag };
+                } else if(name.toLowerCase() === 'br') {
+                  // br需要用View抱起来，不然一个br只是换一行，需要两个br才有段落间隔效果
+                  return { wrapper: 'View', children, attribs, parent, tagName: name, parentTag };
                 } else if (TEXT_TAGS.indexOf(name.toLowerCase()) !== -1 || MIXED_TAGS.indexOf(name.toLowerCase()) !== -1) {
                     // We are able to nest its children inside a Text
                     return { wrapper: 'Text', children, attribs, parent, tagName: name, parentTag };
@@ -396,7 +426,8 @@ export default class HTML extends PureComponent {
             }
             return parsedNode;
         });
-        return this.associateRawTexts(RNElements);
+        let allElements = this.associateRawTexts(RNElements)
+        return this.associateBr(allElements)
     }
 
     /**

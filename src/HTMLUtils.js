@@ -24,7 +24,7 @@ export const PREFORMATTED_TAGS = ['pre'];
 export const MIXED_TAGS = ['a'];
 
 // These text tags shouldn't be associated with their siblings in the associateRawTags method
-export const TEXT_TAGS_IGNORING_ASSOCIATION = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+export const TEXT_TAGS_IGNORING_ASSOCIATION = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br'];
 
 export const ABSOLUTE_FONT_SIZE = {
     'medium': 14,
