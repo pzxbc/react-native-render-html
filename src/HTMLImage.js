@@ -108,7 +108,7 @@ export default class HTMLImage extends PureComponent {
 
     validImage (source, style, props = {}) {
         return (
-            <TouchableWithoutFeedback onPress={() => this.props.onImagePress(source.uri)}>
+            <TouchableWithoutFeedback onPress={() => this.props.onImagePress && this.props.onImagePress(source.uri)}>
                 <Image
                 source={source}
                 resizeMode={'contain'}
